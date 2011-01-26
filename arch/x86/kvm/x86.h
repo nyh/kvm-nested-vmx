@@ -79,6 +79,12 @@ void kvm_before_handle_nmi(struct kvm_vcpu *vcpu);
 void kvm_after_handle_nmi(struct kvm_vcpu *vcpu);
 int kvm_inject_realmode_interrupt(struct kvm_vcpu *vcpu, int irq);
 
+int kvm_read_guest_virt(gva_t addr, void *val, unsigned int bytes,
+		struct kvm_vcpu *vcpu, struct x86_exception *exception);
+
+int kvm_write_guest_virt_system(gva_t addr, void *val, unsigned int bytes,
+		struct kvm_vcpu *vcpu, struct x86_exception *exception);
+
 void kvm_write_tsc(struct kvm_vcpu *vcpu, u64 data);
 
 #endif

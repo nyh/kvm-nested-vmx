@@ -615,10 +615,8 @@ int kvm_set_cr4(struct kvm_vcpu *vcpu, unsigned long cr4)
 				   kvm_read_cr3(vcpu)))
 		return 1;
 
-	if (cr4 & X86_CR4_VMXE)
+	if (kvm_x86_ops->set_cr4(vcpu, cr4))
 		return 1;
-
-	kvm_x86_ops->set_cr4(vcpu, cr4);
 
 	if ((cr4 ^ old_cr4) & pdptr_bits)
 		kvm_mmu_reset_context(vcpu);
@@ -3688,7 +3686,7 @@ static int kvm_fetch_guest_virt(gva_t addr, void *val, unsigned int bytes,
 					  exception);
 }
 
-static int kvm_read_guest_virt(gva_t addr, void *val, unsigned int bytes,
+int kvm_read_guest_virt(gva_t addr, void *val, unsigned int bytes,
 			       struct kvm_vcpu *vcpu,
 			       struct x86_exception *exception)
 {
@@ -3696,6 +3694,7 @@ static int kvm_read_guest_virt(gva_t addr, void *val, unsigned int bytes,
 	return kvm_read_guest_virt_helper(addr, val, bytes, vcpu, access,
 					  exception);
 }
+EXPORT_SYMBOL_GPL(kvm_read_guest_virt);
 
 static int kvm_read_guest_virt_system(gva_t addr, void *val, unsigned int bytes,
 				      struct kvm_vcpu *vcpu,
@@ -3704,7 +3703,7 @@ static int kvm_read_guest_virt_system(gva_t addr, void *val, unsigned int bytes,
 	return kvm_read_guest_virt_helper(addr, val, bytes, vcpu, 0, exception);
 }
 
-static int kvm_write_guest_virt_system(gva_t addr, void *val,
+int kvm_write_guest_virt_system(gva_t addr, void *val,
 				       unsigned int bytes,
 				       struct kvm_vcpu *vcpu,
 				       struct x86_exception *exception)
@@ -3735,6 +3734,7 @@ static int kvm_write_guest_virt_system(gva_t addr, void *val,
 out:
 	return r;
 }
+EXPORT_SYMBOL_GPL(kvm_write_guest_virt_system);
 
 static int emulator_read_emulated(unsigned long addr,
 				  void *val,
